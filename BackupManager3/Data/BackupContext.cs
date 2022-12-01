@@ -13,6 +13,10 @@ namespace BackupManager3.Data
 
         public BackupContext(string source, string target)
         {
+            if (!source.EndsWith("\\"))
+                source += "\\";
+            if (!target.EndsWith("\\"))
+                target += "\\";
             Source = source;
             Target = target;
         }
