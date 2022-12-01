@@ -43,6 +43,7 @@ namespace BackupManager3.Views
             RecurseSubdirectories = true,
         };
         private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
+        private static bool _firstRunAfterAdmin = true;
 
         public MainView()
         {
@@ -250,9 +251,10 @@ namespace BackupManager3.Views
             LastBackupLabel.Content = "Last Backup: " + MainWindow.SaveContext.LastBackup;
 
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Contains("isAdmin"))
+            if (args.Contains("isAdmin") && _firstRunAfterAdmin)
             {
                 await ProcessExecuteBackup();
+                _firstRunAfterAdmin = false;
             }
             else
             {
@@ -282,6 +284,7 @@ namespace BackupManager3.Views
                         case "SAT": ChangeBackupDay(DayOfWeek.Saturday); break;
                         case "SUN": ChangeBackupDay(DayOfWeek.Sunday); break;
                     }
+                    MainWindow.SaveContext.Save();
                 }
             }
         }
