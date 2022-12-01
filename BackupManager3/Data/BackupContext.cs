@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace BackupManager3.Data
 {
-    public enum BackupResult { None, Success, SourceNotFound, TargetNotFound, OtherFailure };
     public class BackupContext
     {
         public string Source { get; set; }
@@ -16,11 +15,6 @@ namespace BackupManager3.Data
         {
             Source = source;
             Target = target;
-        }
-
-        public BackupResult DoBackup()
-        {
-            return BackupResult.None;
         }
     }
 }

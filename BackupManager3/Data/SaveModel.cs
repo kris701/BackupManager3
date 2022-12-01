@@ -8,11 +8,11 @@ namespace BackupManager3.Data
 {
     public class SaveModel
     {
-        public List<string> BackupDays { get; set; }
+        public List<DayOfWeek> BackupDays { get; set; }
         public DateTime LastUpdate { get; set; }
         public List<BackupContext> BackupContexts { get; set; }
 
-        public SaveModel(List<string> backupDays, DateTime lastUpdate, List<BackupContext> backupContexts)
+        public SaveModel(List<DayOfWeek> backupDays, DateTime lastUpdate, List<BackupContext> backupContexts)
         {
             BackupDays = backupDays;
             LastUpdate = lastUpdate;
@@ -21,7 +21,7 @@ namespace BackupManager3.Data
 
         public SaveModel()
         {
-            BackupDays = new List<string>();
+            BackupDays = new List<DayOfWeek>();
             LastUpdate = DateTime.Now;
             BackupContexts = new List<BackupContext>();
         }
