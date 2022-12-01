@@ -21,6 +21,7 @@ using System.Xml.Linq;
 using BackupManager3.Data;
 using BackupManager3.Helpers;
 using Nanotek.WPF.WindowsTrayItemFramework;
+using static System.Windows.Forms.Design.AxImporter;
 
 namespace BackupManager3.Views
 {
@@ -36,6 +37,11 @@ namespace BackupManager3.Views
 
         private string _logPath = "Logs/";
         private string _currentLogName = "None";
+        private EnumerationOptions _options = new EnumerationOptions()
+        {
+            IgnoreInaccessible = true,
+            RecurseSubdirectories = true,
+        };
         private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
 
         public MainView()
@@ -56,6 +62,7 @@ namespace BackupManager3.Views
 
         public async Task ProcessExecuteBackup()
         {
+#if RELEASE
             if (!UACHelper.IsProcessElevated)
             {
                 MainWindow.SaveContext.Save();
@@ -63,6 +70,7 @@ namespace BackupManager3.Views
             }
             else
             {
+#endif
                 SelectFoldersButton.IsEnabled = false;
                 BackupNowButton.IsEnabled = false;
                 DayGrid.IsEnabled = false;
@@ -90,63 +98,91 @@ namespace BackupManager3.Views
                 SelectFoldersButton.IsEnabled = true;
                 BackupNowButton.IsEnabled = true;
                 DayGrid.IsEnabled = true;
+#if RELEASE
             }
+#endif
         }
 
         private async Task<BackupResult> ExecuteBackup()
         {
-            int maxSteps = 0;
-            foreach (BackupContext context in MainWindow.SaveContext.BackupContexts)
+            try
             {
-                if (!Directory.Exists(context.Source))
-                    Directory.CreateDirectory(context.Source);
-                if (!Directory.Exists(context.Target))
-                    Directory.CreateDirectory(context.Target);
-
-                DirectoryInfo dir1 = new DirectoryInfo(context.Source);
-                IEnumerable<FileInfo> list1 = dir1.GetFiles("*.*", SearchOption.AllDirectories);
-                maxSteps += list1.Count();
-
-                if (_cancelTokenSource.Token.IsCancellationRequested)
-                    return BackupResult.Canceled;
-            }
-            BackupProgressBar.Maximum = maxSteps;
-            BackupProgressBar.Value = 0;
-
-            foreach (BackupContext context in MainWindow.SaveContext.BackupContexts)
-            {
-                DirectoryInfo dir1 = new DirectoryInfo(context.Source);
-                IEnumerable<FileInfo> list1 = dir1.GetFiles("*.*", SearchOption.AllDirectories);
-
-                foreach (var file in list1)
+                int maxSteps = 0;
+                var options = new EnumerationOptions()
                 {
-                    FileInfo target = new FileInfo(file.FullName.Replace(context.Source, context.Target));
-                    if (File.Exists(target.FullName))
-                    {
-                        if (target.LastWriteTime < file.LastWriteTime)
-                            await CopyFileAsync(file.FullName, target.FullName);
-                    }
-                    else
-                    {
-                        if (!Directory.Exists(target.Directory.FullName))
-                            Directory.CreateDirectory(target.Directory.FullName);
-                        await CopyFileAsync(file.FullName, target.FullName);
-                    }
-                    BackupProgressBar.Value += 1;
+                    IgnoreInaccessible = true,
+                    RecurseSubdirectories= true,
+                };
+                foreach (BackupContext context in MainWindow.SaveContext.BackupContexts)
+                {
+                    maxSteps += await GetSizeOfDirectory(context);
                     if (_cancelTokenSource.Token.IsCancellationRequested)
                         return BackupResult.Canceled;
                 }
-                if (_cancelTokenSource.Token.IsCancellationRequested)
-                    return BackupResult.Canceled;
+                BackupProgressBar.Maximum = maxSteps;
+                BackupProgressBar.Value = 0;
+
+                foreach (BackupContext context in MainWindow.SaveContext.BackupContexts)
+                {
+                    await ExecuteBackupOfContext(context);
+                    if (_cancelTokenSource.Token.IsCancellationRequested)
+                        return BackupResult.Canceled;
+                }
+
+                BackupProgressBar.Value = 0;
+
+                MainWindow.SaveContext.LastBackup = DateTime.Now;
+                LastBackupLabel.Content = "Last Backup: " + MainWindow.SaveContext.LastBackup;
+                MainWindow.SaveContext.Save();
+
+                return BackupResult.Successful;
             }
+            catch(Exception ex) 
+            {
+                await File.AppendAllTextAsync(_currentLogName, ex.Message + Environment.NewLine);
+                return BackupResult.None;
+            }
+        }
 
-            BackupProgressBar.Value = 0;
+        private async Task<int> GetSizeOfDirectory(BackupContext context)
+        {
+            if (!Directory.Exists(context.Source))
+                Directory.CreateDirectory(context.Source);
+            if (!Directory.Exists(context.Target))
+                Directory.CreateDirectory(context.Target);
 
-            MainWindow.SaveContext.LastBackup = DateTime.Now;
-            LastBackupLabel.Content = "Last Backup: " + MainWindow.SaveContext.LastBackup;
-            MainWindow.SaveContext.Save();
+            DirectoryInfo dir1 = new DirectoryInfo(context.Source);
+            var list1 = await Task.Run(() => {
+                return dir1.GetFiles("*.*", _options);
+            });
+            return list1.Count();
+        }
 
-            return BackupResult.Successful;
+        private async Task ExecuteBackupOfContext(BackupContext context)
+        {
+            DirectoryInfo dir1 = new DirectoryInfo(context.Source);
+            var list1 = await Task.Run(() => {
+                return dir1.GetFiles("*.*", _options);
+            });
+
+            foreach (var file in list1)
+            {
+                FileInfo target = new FileInfo(file.FullName.Replace(context.Source, context.Target));
+                if (File.Exists(target.FullName))
+                {
+                    if (target.LastWriteTime < file.LastWriteTime)
+                        await CopyFileAsync(file.FullName, target.FullName);
+                }
+                else
+                {
+                    if (!Directory.Exists(target.Directory.FullName))
+                        Directory.CreateDirectory(target.Directory.FullName);
+                    await CopyFileAsync(file.FullName, target.FullName);
+                }
+                BackupProgressBar.Value += 1;
+                if (_cancelTokenSource.Token.IsCancellationRequested)
+                    break;
+            }
         }
 
         public async Task CopyFileAsync(string sourcePath, string destinationPath)
