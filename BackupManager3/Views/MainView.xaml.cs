@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System;   
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -80,6 +80,7 @@ namespace BackupManager3.Views
                 ExcludeFoldersButton.IsEnabled = false;
                 BackupNowButton.IsEnabled = false;
                 DayGrid.IsEnabled = false;
+                StatusLabel.Foreground = Brushes.White;
                 if (!Directory.Exists(_logPath))
                     Directory.CreateDirectory(_logPath);
                 _currentLogName = _logPath + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".txt";
@@ -177,12 +178,10 @@ namespace BackupManager3.Views
         {
             foreach (var file in context.Value)
             {
-                FileInfo target = new FileInfo(file.FullName.Replace(context.Key.Source, context.Key.Target));
-
                 bool isExcluded = false;
                 foreach(var checkFile in MainWindow.SaveContext.ExcludedFolders)
                 {
-                    if (target.FullName.StartsWith(checkFile))
+                    if (file.FullName.StartsWith(checkFile))
                     {
                         isExcluded = true;
                         break;
@@ -191,6 +190,8 @@ namespace BackupManager3.Views
 
                 if (!isExcluded)
                 {
+                    FileInfo target = new FileInfo(file.FullName.Replace(context.Key.Source, context.Key.Target));
+
                     if (File.Exists(target.FullName))
                     {
                         if (target.LastWriteTime < file.LastWriteTime)
