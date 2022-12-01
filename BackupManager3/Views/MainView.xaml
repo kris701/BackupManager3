@@ -13,7 +13,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <Grid Margin="5">
+        <Grid x:Name="DayGrid" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -23,16 +23,16 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <CheckBox Grid.Column="0" Content="Mon" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <CheckBox Grid.Column="1" Content="Tue" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <CheckBox Grid.Column="2" Content="Wed" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <CheckBox Grid.Column="3" Content="Thu" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <CheckBox Grid.Column="4" Content="Fri" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <CheckBox Grid.Column="5" Content="Sat" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <CheckBox Grid.Column="6" Content="Sun" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <CheckBox x:Name="MonCheckbox" Grid.Column="0" Content="Mon" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="TueCheckbox" Grid.Column="1" Content="Tue" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="WedCheckbox" Grid.Column="2" Content="Wed" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="ThuCheckbox" Grid.Column="3" Content="Thu" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="FriCheckbox" Grid.Column="4" Content="Fri" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="SatCheckbox" Grid.Column="5" Content="Sat" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="SunCheckbox" Grid.Column="6" Content="Sun" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
         </Grid>
-        <Button Grid.Row="1" Content="Select Folders" Margin="5" Click="SelectFolders_Click"/>
-        <Button Grid.Row="2" Content="Backup Now" Margin="5" Click="BackupNow_Click"/>
+        <Button x:Name="SelectFoldersButton" Grid.Row="1" Content="Select Folders" Margin="5" Click="SelectFolders_Click"/>
+        <Button x:Name="BackupNowButton" Grid.Row="2" Content="Backup Now" Margin="5" Click="BackupNow_Click"/>
         <Grid Grid.Row="3" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="60"/>

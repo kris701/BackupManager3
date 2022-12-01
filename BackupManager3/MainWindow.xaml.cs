@@ -26,29 +26,14 @@ namespace BackupManager3
 
         public MainWindow() : base("Backup Manager 3", GetEmbeddedIcon(), new MainView())
         {
-            if (File.Exists("save.json"))
-            {
-                var result = JsonSerializer.Deserialize<SaveModel>(File.ReadAllText("save.json"));
-                if (result != null)
-                    SaveContext = result;
-                else
-                    SaveContext = new SaveModel();
-            }
-            else
-                SaveContext = new SaveModel();
+            SaveContext = new SaveModel();
+            SaveContext.Load();
             InitializeComponent();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Save();
-        }
-
-        private void Save()
-        {
-            if (File.Exists("save.json"))
-                File.Delete("save.json");
-            File.WriteAllText("save.json", JsonSerializer.Serialize(SaveContext));
+            SaveContext.Save();
         }
 
         private static System.Drawing.Icon GetEmbeddedIcon()
