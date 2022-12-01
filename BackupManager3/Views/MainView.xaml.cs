@@ -79,6 +79,7 @@ namespace BackupManager3.Views
                 SelectFoldersButton.IsEnabled = false;
                 ExcludeFoldersButton.IsEnabled = false;
                 BackupNowButton.IsEnabled = false;
+                CancelButton.IsEnabled = true;
                 DayGrid.IsEnabled = false;
                 StatusLabel.Foreground = Brushes.White;
                 if (!Directory.Exists(_logPath))
@@ -108,6 +109,7 @@ namespace BackupManager3.Views
                 SelectFoldersButton.IsEnabled = true;
                 ExcludeFoldersButton.IsEnabled = true;
                 BackupNowButton.IsEnabled = true;
+                CancelButton.IsEnabled = false;
                 DayGrid.IsEnabled = true;
 #if RELEASE
             }
@@ -178,18 +180,9 @@ namespace BackupManager3.Views
         {
             foreach (var file in context.Value)
             {
-                bool isExcluded = false;
-                foreach(var checkFile in MainWindow.SaveContext.ExcludedFolders)
+                if (!IsExcluded(file.FullName))
                 {
-                    if (file.FullName.StartsWith(checkFile))
-                    {
-                        isExcluded = true;
-                        break;
-                    }
-                }
-
-                if (!isExcluded)
-                {
+                    StatusLabel.ToolTip = "Current File: " + file;
                     FileInfo target = new FileInfo(file.FullName.Replace(context.Key.Source, context.Key.Target));
 
                     if (File.Exists(target.FullName))
@@ -208,6 +201,18 @@ namespace BackupManager3.Views
                 if (_cancelTokenSource.Token.IsCancellationRequested)
                     break;
             }
+        }
+
+        private bool IsExcluded(string fileName)
+        {
+            foreach (var checkFile in MainWindow.SaveContext.ExcludedFolders)
+            {
+                if (fileName.StartsWith(checkFile))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public async Task CopyFileAsync(string sourcePath, string destinationPath)
