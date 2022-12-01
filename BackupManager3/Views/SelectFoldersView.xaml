@@ -19,7 +19,7 @@
                 <ColumnDefinition Width="40"/>
             </Grid.ColumnDefinitions>
             <Label Content="Select folders to backup" Style="{StaticResource StandartLabelStyle}"/>
-            <Button x:Name="AddNewFolderButton" Grid.Column="1" Content="+" Margin="5" Style="{StaticResource StandartGreenButtonStyle}"/>
+            <Button x:Name="AddNewFolderButton" Grid.Column="1" Content="+" Margin="5" Style="{StaticResource StandartGreenButtonStyle}" Click="AddNewFolderButton_Click"/>
         </Grid>
 
         <Label Grid.Row="1" Content="Click the + button to add a folder" Style="{StaticResource StandartLabelStyle}" VerticalAlignment="Top" Margin="5"/>
