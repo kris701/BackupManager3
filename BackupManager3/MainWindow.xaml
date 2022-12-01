@@ -6,5 +6,5 @@
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:base="clr-namespace:Nanotek.WPF.WindowsTrayItemFramework;assembly=Nanotek.WPF.WindowsTrayItemFramework"
         mc:Ignorable="d"
-        Title="Backup Manager 3" Height="450" Width="800" Closing="Window_Closing" Background="Transparent" AllowsTransparency="True" WindowStyle="None" Opacity="0" ShowInTaskbar="False">
+        Title="Backup Manager 3" Height="450" Width="800" Closing="Window_Closing" Background="Transparent" AllowsTransparency="True" WindowStyle="None" Opacity="0" ShowInTaskbar="False" Icon="/BackupManager3;component/Icon.png">
 </base:TrayWindow>
