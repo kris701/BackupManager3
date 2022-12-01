@@ -28,6 +28,7 @@ namespace BackupManager3
         {
             SaveContext = new SaveModel();
             SaveContext.Load();
+            
             InitializeComponent();
         }
 

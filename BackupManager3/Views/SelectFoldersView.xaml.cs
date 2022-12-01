@@ -55,7 +55,7 @@ namespace BackupManager3.Views
 
         private void AddNewFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            FolderPanel.Children.Add(new BackupContextControl());
+            FolderPanel.Children.Add(new BackupContextControl(FolderPanel));
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -64,7 +64,7 @@ namespace BackupManager3.Views
                 FolderPanel.Children.Clear();
             foreach(BackupContext context in MainWindow.SaveContext.BackupContexts)
             {
-                FolderPanel.Children.Add(new BackupContextControl(context));
+                FolderPanel.Children.Add(new BackupContextControl(context, FolderPanel));
             }
         }
     }

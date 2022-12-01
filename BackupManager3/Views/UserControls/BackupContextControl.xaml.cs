@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace BackupManager3.Views.UserControls
 {
@@ -22,17 +23,20 @@ namespace BackupManager3.Views.UserControls
     /// </summary>
     public partial class BackupContextControl : UserControl
     {
-        public BackupContextControl(BackupContext context)
+        private Panel _parent;
+        public BackupContextControl(BackupContext context, Panel parent)
         {
             InitializeComponent();
 
+            _parent = parent;
             SourceFolderTextbox.Text = context.Source;
             TargetFolderTextbox.Text = context.Target;
         }
-        public BackupContextControl()
+        public BackupContextControl(Panel parent)
         {
             InitializeComponent();
 
+            _parent = parent;
             SourceFolderTextbox.Text = "";
             TargetFolderTextbox.Text = "";
         }
@@ -57,6 +61,11 @@ namespace BackupManager3.Views.UserControls
                     textbox.ToolTip = null;
                 }
             }
+        }
+
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            _parent.Children.Remove(this);
         }
     }
 }

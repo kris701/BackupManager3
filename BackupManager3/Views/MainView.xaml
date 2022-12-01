@@ -32,14 +32,23 @@
             <CheckBox x:Name="SunCheckbox" Grid.Column="6" Content="Sun" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
         </Grid>
         <Button x:Name="SelectFoldersButton" Grid.Row="1" Content="Select Folders" Margin="5" Click="SelectFolders_Click"/>
-        <Button x:Name="BackupNowButton" Grid.Row="2" Content="Backup Now" Margin="5" Click="BackupNow_Click"/>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="LastBackupLabel" Content="Last Backup: " HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+            <Button x:Name="BackupNowButton" Grid.Column="1" Content="Backup Now" Margin="5" Click="BackupNow_Click"/>
+        </Grid>
         <Grid Grid.Row="3" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="60"/>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="60"/>
             </Grid.ColumnDefinitions>
             <Label Content="Progress:" Foreground="White"/>
             <ProgressBar x:Name="BackupProgressBar" Grid.Column="1"/>
+            <Button x:Name="CancelButton" Grid.Column="2" Margin="5" Content="Cancel" Click="CancelButton_Click"/>
         </Grid>
 
     </Grid>
