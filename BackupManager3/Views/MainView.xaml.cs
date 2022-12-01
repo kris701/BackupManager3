@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,8 +17,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Xml.Linq;
 using BackupManager3.Data;
+using BackupManager3.Helpers;
 using Nanotek.WPF.WindowsTrayItemFramework;
 
 namespace BackupManager3.Views
@@ -28,6 +33,9 @@ namespace BackupManager3.Views
         public UIElement Element { get; }
         public double TargetWidth { get; } = 400;
         public double TargetHeight { get; } = 164;
+
+        private string _logPath = "Logs/";
+        private string _currentLogName = "None";
         private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
 
         public MainView()
@@ -46,31 +54,43 @@ namespace BackupManager3.Views
             await ProcessExecuteBackup();
         }
 
-        private async Task ProcessExecuteBackup()
+        public async Task ProcessExecuteBackup()
         {
-            SelectFoldersButton.IsEnabled = false;
-            BackupNowButton.IsEnabled = false;
-            DayGrid.IsEnabled = false;
-            BackupResult result = await ExecuteBackup();
-            switch (result)
+            if (!UACHelper.IsProcessElevated)
             {
-                case BackupResult.Successful:
-                    BackupProgressBar.Background = Brushes.Transparent;
-                    BackupProgressBar.ToolTip = "";
-                    break;
-                case BackupResult.Canceled:
-                    BackupProgressBar.Background = Brushes.Yellow;
-                    BackupProgressBar.ToolTip = "The backup process was cancled";
-                    break;
-                case BackupResult.None:
-                    BackupProgressBar.Background = Brushes.Red;
-                    BackupProgressBar.ToolTip = "An unexpected error occured during backup process!";
-                    break;
+                MainWindow.SaveContext.Save();
+                UACHelper.ElevateProcess("isAdmin");
             }
-            _cancelTokenSource = new CancellationTokenSource();
-            SelectFoldersButton.IsEnabled = true;
-            BackupNowButton.IsEnabled = true;
-            DayGrid.IsEnabled = true;
+            else
+            {
+                SelectFoldersButton.IsEnabled = false;
+                BackupNowButton.IsEnabled = false;
+                DayGrid.IsEnabled = false;
+                if (!Directory.Exists(_logPath))
+                    Directory.CreateDirectory(_logPath);
+                _currentLogName = _logPath + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".txt";
+                BackupResult result = await ExecuteBackup();
+                switch (result)
+                {
+                    case BackupResult.Successful:
+                        BackupProgressBar.Background = Brushes.Transparent;
+                        BackupProgressBar.ToolTip = "";
+                        break;
+                    case BackupResult.Canceled:
+                        BackupProgressBar.Background = Brushes.Yellow;
+                        BackupProgressBar.ToolTip = "The backup process was cancled";
+                        break;
+                    case BackupResult.None:
+                        BackupProgressBar.Background = Brushes.Red;
+                        BackupProgressBar.ToolTip = "An unexpected error occured during backup process!";
+                        break;
+                }
+                BackupProgressBar.Value = 0;
+                _cancelTokenSource = new CancellationTokenSource();
+                SelectFoldersButton.IsEnabled = true;
+                BackupNowButton.IsEnabled = true;
+                DayGrid.IsEnabled = true;
+            }
         }
 
         private async Task<BackupResult> ExecuteBackup()
@@ -100,14 +120,18 @@ namespace BackupManager3.Views
 
                 foreach (var file in list1)
                 {
-                    string targetFileName = file.FullName.Replace(context.Source, context.Target);
-                    if (File.Exists(targetFileName))
+                    FileInfo target = new FileInfo(file.FullName.Replace(context.Source, context.Target));
+                    if (File.Exists(target.FullName))
                     {
-                        if (new FileInfo(targetFileName).LastWriteTime < file.LastWriteTime)
-                            await CopyFileAsync(file.FullName, targetFileName);
+                        if (target.LastWriteTime < file.LastWriteTime)
+                            await CopyFileAsync(file.FullName, target.FullName);
                     }
                     else
-                        await CopyFileAsync(file.FullName, targetFileName);
+                    {
+                        if (!Directory.Exists(target.Directory.FullName))
+                            Directory.CreateDirectory(target.Directory.FullName);
+                        await CopyFileAsync(file.FullName, target.FullName);
+                    }
                     BackupProgressBar.Value += 1;
                     if (_cancelTokenSource.Token.IsCancellationRequested)
                         return BackupResult.Canceled;
@@ -142,6 +166,10 @@ namespace BackupManager3.Views
                 if (File.Exists(destinationPath))
                     File.Delete(destinationPath);
             }
+            catch (Exception ex)
+            {
+                await File.AppendAllTextAsync(_currentLogName, ex.Message + Environment.NewLine);
+            }
         }
 
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -154,11 +182,23 @@ namespace BackupManager3.Views
             SatCheckbox.IsChecked = MainWindow.SaveContext.BackupDays.Contains(DayOfWeek.Saturday);
             SunCheckbox.IsChecked = MainWindow.SaveContext.BackupDays.Contains(DayOfWeek.Sunday);
             LastBackupLabel.Content = "Last Backup: " + MainWindow.SaveContext.LastBackup;
-            if (MainWindow.SaveContext.BackupDays.Contains(DateTime.Now.DayOfWeek))
+
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length > 0)
             {
-                if (MainWindow.SaveContext.LastBackup.DayOfWeek != DateTime.Now.DayOfWeek)
+                if (args.Contains("isAdmin"))
                 {
                     await ProcessExecuteBackup();
+                }
+            }
+            else
+            {
+                if (MainWindow.SaveContext.BackupDays.Contains(DateTime.Now.DayOfWeek))
+                {
+                    if (MainWindow.SaveContext.LastBackup.DayOfWeek != DateTime.Now.DayOfWeek)
+                    {
+                        await ProcessExecuteBackup();
+                    }
                 }
             }
         }
