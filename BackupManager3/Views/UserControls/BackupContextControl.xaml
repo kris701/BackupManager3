@@ -5,10 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BackupManager3.Views.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="80" d:DesignWidth="400">
-    <Grid>
+             d:DesignHeight="80" d:DesignWidth="600">
+    <Grid Background="#FF3E4858">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="110"/>
             <ColumnDefinition/>
             <ColumnDefinition Width="40"/>
         </Grid.ColumnDefinitions>
@@ -17,11 +17,11 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Label Content="Source Folder" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
-        <TextBox x:Name="SourceFolderTextbox" Grid.Column="1" Margin="5" TextChanged="CheckForPathExistence_TextChanged"/>
-        <Label Grid.Row="1" Content="Target Folder" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
-        <TextBox x:Name="TargetFolderTextbox" Grid.Column="1" Grid.Row="1" Margin="5" TextChanged="CheckForPathExistence_TextChanged"/>
-        <Button x:Name="RemoveButton" Grid.Column="2" Margin="5" Content="X" Click="RemoveButton_Click"/>
+        <Label Content="Source Folder" Style="{StaticResource StandartLabelStyle}"/>
+        <TextBox x:Name="SourceFolderTextbox" Grid.Column="1" Margin=" 5" Style="{StaticResource StandartTextBoxStyle}" TextChanged="CheckForPathExistence_TextChanged"/>
+        <Label Grid.Row="1" Content="Target Folder" Style="{StaticResource StandartLabelStyle}"/>
+        <TextBox x:Name="TargetFolderTextbox" Grid.Column="1" Grid.Row="1" Margin="5" Style="{StaticResource StandartTextBoxStyle}" TextChanged="CheckForPathExistence_TextChanged"/>
+        <Button x:Name="RemoveButton" Grid.Column="2" Margin="5" Content="X" Style="{StaticResource StandartExitButtonStyle}" Click="RemoveButton_Click"/>
 
     </Grid>
 </UserControl>

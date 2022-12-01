@@ -24,7 +24,7 @@ namespace BackupManager3.Views
     public partial class SelectFoldersView : UserControl, TrayWindowSwitchable
     {
         public UIElement Element { get; }
-        public double TargetWidth { get; } = 400;
+        public double TargetWidth { get; } = 600;
         public double TargetHeight { get; } = 400;
 
         public SelectFoldersView()
@@ -60,8 +60,6 @@ namespace BackupManager3.Views
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.SaveContext.BackupContexts.Count > 0)
-                FolderPanel.Children.Clear();
             foreach(BackupContext context in MainWindow.SaveContext.BackupContexts)
             {
                 FolderPanel.Children.Add(new BackupContextControl(context, FolderPanel));

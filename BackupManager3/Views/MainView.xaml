@@ -5,11 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BackupManager3.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="160" d:DesignWidth="400" Background="#721D2B40" Loaded="UserControl_Loaded">
-    <Grid>
+             d:DesignHeight="164" d:DesignWidth="400" Background="#721D2B40" Loaded="UserControl_Loaded">
+    <Grid Margin="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
+            <RowDefinition Height="2"/>
             <RowDefinition Height="40"/>
+            <RowDefinition Height="2"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
@@ -23,32 +25,42 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <CheckBox x:Name="MonCheckbox" Grid.Column="0" Content="Mon" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
-            <CheckBox x:Name="TueCheckbox" Grid.Column="1" Content="Tue" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
-            <CheckBox x:Name="WedCheckbox" Grid.Column="2" Content="Wed" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
-            <CheckBox x:Name="ThuCheckbox" Grid.Column="3" Content="Thu" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
-            <CheckBox x:Name="FriCheckbox" Grid.Column="4" Content="Fri" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
-            <CheckBox x:Name="SatCheckbox" Grid.Column="5" Content="Sat" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
-            <CheckBox x:Name="SunCheckbox" Grid.Column="6" Content="Sun" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="MonCheckbox" Grid.Column="0" Content="Mon" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource StandartCheckBoxStyle}" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="TueCheckbox" Grid.Column="1" Content="Tue" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource StandartCheckBoxStyle}" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="WedCheckbox" Grid.Column="2" Content="Wed" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource StandartCheckBoxStyle}" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="ThuCheckbox" Grid.Column="3" Content="Thu" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource StandartCheckBoxStyle}" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="FriCheckbox" Grid.Column="4" Content="Fri" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource StandartCheckBoxStyle}" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="SatCheckbox" Grid.Column="5" Content="Sat" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource StandartCheckBoxStyle}" Click="ChangeBackupDay_Click"/>
+            <CheckBox x:Name="SunCheckbox" Grid.Column="6" Content="Sun" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource StandartCheckBoxStyle}" Click="ChangeBackupDay_Click"/>
         </Grid>
-        <Button x:Name="SelectFoldersButton" Grid.Row="1" Content="Select Folders" Margin="5" Click="SelectFolders_Click"/>
-        <Grid Grid.Row="2">
+        
+        <GridSplitter Grid.Row="1" Height="2" HorizontalAlignment="Stretch" Background="#FF2D2D5F"/>
+        
+        <Button x:Name="SelectFoldersButton" Grid.Row="2" Content="Select Folders" Margin="5" Style="{StaticResource StandartButtonStyle}" Click="SelectFolders_Click"/>
+        
+        <GridSplitter Grid.Row="3" Height="2" HorizontalAlignment="Stretch" Background="#FF2D2D5F"/>
+        
+        <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="2"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
-            <Label x:Name="LastBackupLabel" Content="Last Backup: " HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
-            <Button x:Name="BackupNowButton" Grid.Column="1" Content="Backup Now" Margin="5" Click="BackupNow_Click"/>
+            <Label x:Name="LastBackupLabel" Content="Last Backup: " Style="{StaticResource StandartLabelStyle}"/>
+            
+            <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" Background="#FF2D2D5F"/>
+
+            <Button x:Name="BackupNowButton" Grid.Column="2" Content="Backup Now" Margin="5" Style="{StaticResource StandartButtonStyle}" Click="BackupNow_Click"/>
         </Grid>
-        <Grid Grid.Row="3" Margin="5">
+        <Grid Grid.Row="5" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="60"/>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="60"/>
             </Grid.ColumnDefinitions>
-            <Label Content="Progress:" Foreground="White"/>
+            <Label Content="Progress:" Style="{StaticResource StandartLabelStyle}"/>
             <ProgressBar x:Name="BackupProgressBar" Grid.Column="1"/>
-            <Button x:Name="CancelButton" Grid.Column="2" Margin="5" Content="Cancel" Click="CancelButton_Click"/>
+            <Button x:Name="CancelButton" Grid.Column="2" Margin="5" Content="Cancel" Style="{StaticResource StandartExitButtonStyle}" Click="CancelButton_Click"/>
         </Grid>
 
     </Grid>

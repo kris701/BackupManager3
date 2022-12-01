@@ -27,7 +27,7 @@ namespace BackupManager3.Views
         private enum BackupResult { None, Successful, Canceled }
         public UIElement Element { get; }
         public double TargetWidth { get; } = 400;
-        public double TargetHeight { get; } = 160;
+        public double TargetHeight { get; } = 164;
         private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
 
         public MainView()
