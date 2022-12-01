@@ -13,12 +13,20 @@ namespace BackupManager3.Data
         public List<DayOfWeek> BackupDays { get; set; }
         public DateTime LastBackup { get; set; }
         public List<BackupContext> BackupContexts { get; set; }
+        public List<string> ExcludedFolders { get; set; }
 
-        public SaveModel(List<DayOfWeek> backupDays, DateTime lastBackup, List<BackupContext> backupContexts)
+        public SaveModel(List<DayOfWeek> backupDays, DateTime lastBackup, List<BackupContext> backupContexts, List<string> excludedFolders)
         {
             BackupDays = backupDays;
             LastBackup = lastBackup;
             BackupContexts = backupContexts;
+            ExcludedFolders = new List<string>();
+            foreach (var folder in excludedFolders) {
+                if (!folder.EndsWith("\\"))
+                    ExcludedFolders.Add(folder + "\\");
+                else
+                    ExcludedFolders.Add(folder);
+            }
         }
 
         public SaveModel()
@@ -26,6 +34,7 @@ namespace BackupManager3.Data
             BackupDays = new List<DayOfWeek>();
             LastBackup = DateTime.Now;
             BackupContexts = new List<BackupContext>();
+            ExcludedFolders = new List<string>();
         }
 
         public void Load()
@@ -38,6 +47,7 @@ namespace BackupManager3.Data
                     BackupDays = result.BackupDays;
                     LastBackup = result.LastBackup;
                     BackupContexts = result.BackupContexts;
+                    ExcludedFolders = result.ExcludedFolders;
                 }
                 else
                 {
@@ -45,6 +55,7 @@ namespace BackupManager3.Data
                     BackupDays = new List<DayOfWeek>();
                     LastBackup = DateTime.Now;
                     BackupContexts = new List<BackupContext>();
+                    ExcludedFolders = new List<string>();
                 }
             }
             else
@@ -53,6 +64,7 @@ namespace BackupManager3.Data
                 BackupDays = new List<DayOfWeek>();
                 LastBackup = DateTime.Now;
                 BackupContexts = new List<BackupContext>();
+                ExcludedFolders = new List<string>();
             }
         }
 

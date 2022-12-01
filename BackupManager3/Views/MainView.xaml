@@ -35,9 +35,16 @@
         </Grid>
         
         <GridSplitter Grid.Row="1" Height="2" HorizontalAlignment="Stretch" Background="#FF2D2D5F"/>
-        
-        <Button x:Name="SelectFoldersButton" Grid.Row="2" Content="Select Folders" Margin="5" Style="{StaticResource StandartButtonStyle}" Click="SelectFolders_Click"/>
-        
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="SelectFoldersButton" Content="Select Folders" Margin="5" Style="{StaticResource StandartButtonStyle}" Click="SelectFolders_Click"/>
+            <Button x:Name="ExcludeFoldersButton" Grid.Column="1" Content="Exclude Folders" Margin="5" Style="{StaticResource StandartButtonStyle}" Click="ExcludeFoldersButton_Click"/>
+        </Grid>
+                
         <GridSplitter Grid.Row="3" Height="2" HorizontalAlignment="Stretch" Background="#FF2D2D5F"/>
         
         <Grid Grid.Row="4">
@@ -54,12 +61,12 @@
         </Grid>
         <Grid Grid.Row="5" Margin="5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="120"/>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="60"/>
             </Grid.ColumnDefinitions>
-            <Label Content="Progress:" Style="{StaticResource StandartLabelStyle}"/>
-            <ProgressBar x:Name="BackupProgressBar" Grid.Column="1"/>
+            <Label x:Name="StatusLabel" Content="" Style="{StaticResource StandartLabelStyle}"/>
+            <ProgressBar x:Name="BackupProgressBar" Grid.Column="1" Margin="2"/>
             <Button x:Name="CancelButton" Grid.Column="2" Margin="5" Content="Cancel" Style="{StaticResource StandartExitButtonStyle}" Click="CancelButton_Click"/>
         </Grid>
 

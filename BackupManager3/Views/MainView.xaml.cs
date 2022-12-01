@@ -55,6 +55,11 @@ namespace BackupManager3.Views
             ViewSwitcher.SwitchView(new SelectFoldersView());
         }
 
+        private void ExcludeFoldersButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewSwitcher.SwitchView(new ExcludeFoldersView());
+        }
+
         private async void BackupNow_Click(object sender, RoutedEventArgs e)
         {
             await ProcessExecuteBackup();
@@ -72,6 +77,7 @@ namespace BackupManager3.Views
             {
 #endif
                 SelectFoldersButton.IsEnabled = false;
+                ExcludeFoldersButton.IsEnabled = false;
                 BackupNowButton.IsEnabled = false;
                 DayGrid.IsEnabled = false;
                 if (!Directory.Exists(_logPath))
@@ -81,21 +87,25 @@ namespace BackupManager3.Views
                 switch (result)
                 {
                     case BackupResult.Successful:
-                        BackupProgressBar.Background = Brushes.Transparent;
-                        BackupProgressBar.ToolTip = "";
+                        StatusLabel.Content = "Backup Complete";
+                        StatusLabel.Foreground = Brushes.White;
+                        StatusLabel.ToolTip = null;
                         break;
                     case BackupResult.Canceled:
-                        BackupProgressBar.Background = Brushes.Yellow;
-                        BackupProgressBar.ToolTip = "The backup process was cancled";
+                        StatusLabel.Content = "Backup Canceled";
+                        StatusLabel.Foreground = Brushes.Yellow;
+                        StatusLabel.ToolTip = "The backup process was cancled";
                         break;
                     case BackupResult.None:
-                        BackupProgressBar.Background = Brushes.Red;
-                        BackupProgressBar.ToolTip = "An unexpected error occured during backup process!";
+                        StatusLabel.Content = "Error";
+                        StatusLabel.Foreground = Brushes.Red;
+                        StatusLabel.ToolTip = "An unexpected error occured during backup process! Look in the logs for details.";
                         break;
                 }
                 BackupProgressBar.Value = 0;
                 _cancelTokenSource = new CancellationTokenSource();
                 SelectFoldersButton.IsEnabled = true;
+                ExcludeFoldersButton.IsEnabled = true;
                 BackupNowButton.IsEnabled = true;
                 DayGrid.IsEnabled = true;
 #if RELEASE
@@ -107,22 +117,27 @@ namespace BackupManager3.Views
         {
             try
             {
-                int maxSteps = 0;
+                StatusLabel.Content = "Indexing...";
+                Dictionary<BackupContext, List<FileInfo>> data = new Dictionary<BackupContext, List<FileInfo>>();
                 var options = new EnumerationOptions()
                 {
                     IgnoreInaccessible = true,
                     RecurseSubdirectories= true,
                 };
+                int maxCount = 0;
                 foreach (BackupContext context in MainWindow.SaveContext.BackupContexts)
                 {
-                    maxSteps += await GetSizeOfDirectory(context);
+                    List<FileInfo> info = await GetSizeOfDirectory(context);
+                    data.Add(context, info);
+                    maxCount += info.Count;
                     if (_cancelTokenSource.Token.IsCancellationRequested)
                         return BackupResult.Canceled;
                 }
-                BackupProgressBar.Maximum = maxSteps;
+                BackupProgressBar.Maximum = maxCount;
                 BackupProgressBar.Value = 0;
 
-                foreach (BackupContext context in MainWindow.SaveContext.BackupContexts)
+                StatusLabel.Content = "Backup Up...";
+                foreach (var context in data)
                 {
                     await ExecuteBackupOfContext(context);
                     if (_cancelTokenSource.Token.IsCancellationRequested)
@@ -144,7 +159,7 @@ namespace BackupManager3.Views
             }
         }
 
-        private async Task<int> GetSizeOfDirectory(BackupContext context)
+        private async Task<List<FileInfo>> GetSizeOfDirectory(BackupContext context)
         {
             if (!Directory.Exists(context.Source))
                 Directory.CreateDirectory(context.Source);
@@ -155,29 +170,38 @@ namespace BackupManager3.Views
             var list1 = await Task.Run(() => {
                 return dir1.GetFiles("*.*", _options);
             });
-            return list1.Count();
+            return list1.ToList();
         }
 
-        private async Task ExecuteBackupOfContext(BackupContext context)
+        private async Task ExecuteBackupOfContext(KeyValuePair<BackupContext,List<FileInfo>> context)
         {
-            DirectoryInfo dir1 = new DirectoryInfo(context.Source);
-            var list1 = await Task.Run(() => {
-                return dir1.GetFiles("*.*", _options);
-            });
-
-            foreach (var file in list1)
+            foreach (var file in context.Value)
             {
-                FileInfo target = new FileInfo(file.FullName.Replace(context.Source, context.Target));
-                if (File.Exists(target.FullName))
+                FileInfo target = new FileInfo(file.FullName.Replace(context.Key.Source, context.Key.Target));
+
+                bool isExcluded = false;
+                foreach(var checkFile in MainWindow.SaveContext.ExcludedFolders)
                 {
-                    if (target.LastWriteTime < file.LastWriteTime)
-                        await CopyFileAsync(file.FullName, target.FullName);
+                    if (target.FullName.StartsWith(checkFile))
+                    {
+                        isExcluded = true;
+                        break;
+                    }
                 }
-                else
+
+                if (!isExcluded)
                 {
-                    if (!Directory.Exists(target.Directory.FullName))
-                        Directory.CreateDirectory(target.Directory.FullName);
-                    await CopyFileAsync(file.FullName, target.FullName);
+                    if (File.Exists(target.FullName))
+                    {
+                        if (target.LastWriteTime < file.LastWriteTime)
+                            await CopyFileAsync(file.FullName, target.FullName);
+                    }
+                    else
+                    {
+                        if (!Directory.Exists(target.Directory.FullName))
+                            Directory.CreateDirectory(target.Directory.FullName);
+                        await CopyFileAsync(file.FullName, target.FullName);
+                    }
                 }
                 BackupProgressBar.Value += 1;
                 if (_cancelTokenSource.Token.IsCancellationRequested)
