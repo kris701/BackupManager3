@@ -30,5 +30,15 @@ namespace BackupManager3.Views
             InitializeComponent();
             Element = this;
         }
+
+        private void SelectFolders_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BackupNow_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

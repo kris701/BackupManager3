@@ -22,7 +22,7 @@ namespace BackupManager3
 {
     public partial class MainWindow : TrayWindow
     {
-        private SaveModel _save;
+        public static SaveModel SaveContext { get; internal set; }
 
         public MainWindow() : base("Backup Manager 3", GetEmbeddedIcon(), new MainView())
         {
@@ -30,12 +30,12 @@ namespace BackupManager3
             {
                 var result = JsonSerializer.Deserialize<SaveModel>(File.ReadAllText("save.json"));
                 if (result != null)
-                    _save = result;
+                    SaveContext = result;
                 else
-                    _save = new SaveModel();
+                    SaveContext = new SaveModel();
             }
             else
-                _save = new SaveModel();
+                SaveContext = new SaveModel();
             InitializeComponent();
         }
 
@@ -48,7 +48,7 @@ namespace BackupManager3
         {
             if (File.Exists("save.json"))
                 File.Delete("save.json");
-            File.WriteAllText("save.json", JsonSerializer.Serialize(_save));
+            File.WriteAllText("save.json", JsonSerializer.Serialize(SaveContext));
         }
 
         private static System.Drawing.Icon GetEmbeddedIcon()

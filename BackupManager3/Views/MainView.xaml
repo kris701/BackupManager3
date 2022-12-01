@@ -5,8 +5,42 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BackupManager3.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Background="#721D2B40">
+             d:DesignHeight="160" d:DesignWidth="400" Background="#721D2B40">
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <CheckBox Grid.Column="0" Content="Mon" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <CheckBox Grid.Column="1" Content="Tue" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <CheckBox Grid.Column="2" Content="Wed" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <CheckBox Grid.Column="3" Content="Thu" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <CheckBox Grid.Column="4" Content="Fri" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <CheckBox Grid.Column="5" Content="Sat" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <CheckBox Grid.Column="6" Content="Sun" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+        <Button Grid.Row="1" Content="Select Folders" Margin="5" Click="SelectFolders_Click"/>
+        <Button Grid.Row="2" Content="Backup Now" Margin="5" Click="BackupNow_Click"/>
+        <Grid Grid.Row="3" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Progress:" Foreground="White"/>
+            <ProgressBar Grid.Column="1"/>
+        </Grid>
+
     </Grid>
 </UserControl>
