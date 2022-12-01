@@ -250,12 +250,9 @@ namespace BackupManager3.Views
             LastBackupLabel.Content = "Last Backup: " + MainWindow.SaveContext.LastBackup;
 
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length > 0)
+            if (args.Contains("isAdmin"))
             {
-                if (args.Contains("isAdmin"))
-                {
-                    await ProcessExecuteBackup();
-                }
+                await ProcessExecuteBackup();
             }
             else
             {
