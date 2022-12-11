@@ -260,7 +260,7 @@ namespace BackupManager3.Views
             {
                 if (MainWindow.SaveContext.BackupDays.Contains(DateTime.Now.DayOfWeek))
                 {
-                    if (MainWindow.SaveContext.LastBackup.DayOfWeek != DateTime.Now.DayOfWeek)
+                    if (MainWindow.SaveContext.LastBackup.Date != DateTime.Now.Date)
                     {
                         await ProcessExecuteBackup();
                     }
